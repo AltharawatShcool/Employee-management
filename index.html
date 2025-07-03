@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة شؤون الموظفين المتقدم</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Firebase SDK v9 -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs, getDoc, query, where, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration - يجب تحديث هذه القيم بقيم مشروعك
+        const firebaseConfig = {
+            apiKey: "AIzaSyBKUhbV9g6tTDdlXBI7No6Qdp00mkAHQHk",
+            authDomain: "stafftns-b804c.firebaseapp.com",
+            databaseURL: "https://stafftns-b804c-default-rtdb.firebaseio.com",
+            projectId: "stafftns-b804c",
+            storageBucket: "stafftns-b804c.firebasestorage.app",
+            messagingSenderId: "510018548983",
+            appId: "1:510018548983:web:83ac695a94354e8783cff2",
+            measurementId: "G-XXKSCC9SDR"
+        };
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Make Firebase available globally
+        window.firebaseApp = app;
+        window.db = db;
+        window.firestore = { collection, doc, addDoc, updateDoc, deleteDoc, getDocs, getDoc, query, where, orderBy, onSnapshot };
+
+        // Initialize app after Firebase is ready
+        window.addEventListener('load', () => {
+            if (window.initializeApp) {
+                window.initializeApp();
+            }
+        });
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        dark: '#181818'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+        * {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .btn-primary {
+            @apply bg-primary hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105;
+        }
+
+        .btn-secondary {
+            @apply bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200;
+        }
+
+        .table-row:hover {
+            @apply bg-gray-50 dark:bg-gray-700 transform scale-[1.01] transition-all duration-150;
+        }
+
+        .card {
+            @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow duration-300;
+        }
+
+        .stat-card {
+            @apply bg-gradient-to-r from-primary to-purple-600 text-white rounded-xl p-6 shadow-lg transform hover:scale-105 transition-all duration-300;
+        }
+
+        .input-field {
+            @apply w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 dark:text-white transition-all duration-200;
+        }
+
+        .search-box {
+            @apply w-full max-w-md px-4 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white dark:bg-gray-700 dark:text-white;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .loading {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #5D5CDE;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .nav-item.active {
+            @apply bg-primary text-white;
+        }
+
+        .filter-badge {
+            @apply inline-block bg-primary text-white text-xs px-2 py-1 rounded-full mr-2 mb-2;
+        }
+
+        @media print {
+            .print-hidden {
+                display: none !important;
+            }
+
+            .print-only {
+                display: block !important;
+            }
+
+            body {
+                background: white !important;
+                color: black !important;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #000;
+            }
+        }
+
+        .modal-backdrop {
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .firebase-note {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 dark:bg-dark text-gray-900 dark:text-white min-h-screen">
+    
+
+    <!-- Navigation -->
+    <nav
+        class="bg-white dark:bg-gray-800 shadow-xl border-b border-gray-200 dark:border-gray-700 print-hidden sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-primary flex items-center">
+                            <i class="fas fa-users-cog ml-2"></i>
+                            نظام شؤون الموظفين المتقدم
+                        </h1>
+                    </div>
+                </div>
+
+                <div class="hidden md:block">
+                    <div class="flex items-center space-x-4 space-x-reverse">
+                        <button onclick="showPage('dashboard')"
+                            class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-tachometer-alt ml-1"></i> لوحة التحكم
+                        </button>
+                        <button onclick="showPage('employees')"
+                            class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-users ml-1"></i> الموظفون
+                        </button>
+                        <button onclick="showPage('resignations')"
+                            class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-file-signature ml-1"></i> الاستقالات
+                        </button>
+                        <button onclick="showPage('terminations')"
+                            class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-user-times ml-1"></i> إنهاء الخدمات
+                        </button>
+                        <button onclick="showPage('leaves')"
+                            class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-calendar-alt ml-1"></i> الإجازات
+                        </button>
+                        <button onclick="showPage('reports')"
+                            class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-chart-bar ml-1"></i> التقارير
+                        </button>
+                        <button onclick="showPage('settings')"
+                            class="nav-item px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-cog ml-1"></i> الإعدادات
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()"
+                        class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu"
+            class="hidden md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <button onclick="showPage('dashboard'); toggleMobileMenu()"
+                    class="block w-full text-right px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="fas fa-tachometer-alt ml-1"></i> لوحة التحكم
+                </button>
+                <button onclick="showPage('employees'); toggleMobileMenu()"
+                    class="block w-full text-right px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="fas fa-users ml-1"></i> الموظفون
+                </button>
+                <button onclick="showPage('resignations'); toggleMobileMenu()"
+                    class="block w-full text-right px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="fas fa-file-signature ml-1"></i> الاستقالات
+                </button>
+                <button onclick="showPage('terminations'); toggleMobileMenu()"
+                    class="block w-full text-right px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="fas fa-user-times ml-1"></i> إنهاء الخدمات
+                </button>
+                <button onclick="showPage('leaves'); toggleMobileMenu()"
+                    class="block w-full text-right px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="fas fa-calendar-alt ml-1"></i> الإجازات
+                </button>
+                <button onclick="showPage('reports'); toggleMobileMenu()"
+                    class="block w-full text-right px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="fas fa-chart-bar ml-1"></i> التقارير
+                </button>
+                <button onclick="showPage('settings'); toggleMobileMenu()"
+                    class="block w-full text-right px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="fas fa-cog ml-1"></i> الإعدادات
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading Indicator -->
+    <div id="loading-indicator"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 flex flex-col items-center">
+            <div class="loading"></div>
+            <p class="mt-4 text-gray-700 dark:text-gray-300">جاري التحميل...</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 px-4">
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">لوحة التحكم</h2>
+                <p class="text-gray-600 dark:text-gray-400">نظرة عامة على حالة الموظفين والإحصائيات</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white/80 text-sm">إجمالي الموظفين</p>
+                            <p id="total-employees" class="text-2xl font-bold">0</p>
+                        </div>
+                        <i class="fas fa-users text-3xl text-white/80"></i>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-6 shadow-lg transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white/80 text-sm">الموظفون النشطون</p>
+                            <p id="active-employees" class="text-2xl font-bold">0</p>
+                        </div>
+                        <i class="fas fa-user-check text-3xl text-white/80"></i>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-xl p-6 shadow-lg transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white/80 text-sm">الاستقالات المعلقة</p>
+                            <p id="pending-resignations" class="text-2xl font-bold">0</p>
+                        </div>
+                        <i class="fas fa-file-signature text-3xl text-white/80"></i>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white/80 text-sm">الإجازات النشطة</p>
+                            <p id="active-leaves" class="text-2xl font-bold">0</p>
+                        </div>
+                        <i class="fas fa-calendar-alt text-3xl text-white/80"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">توزيع الموظفين حسب القسم</h3>
+                    <canvas id="department-chart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">إحصائيات الإجازات الشهرية</h3>
+                    <canvas id="leaves-chart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="card">
+                <h3 class="text-lg font-semibold mb-4">النشاطات الأخيرة</h3>
+                <div id="recent-activities" class="space-y-3">
+                    <!-- Activities will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Employees Page -->
+        <div id="employees-page" class="page hidden fade-in">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold">إدارة الموظفين</h2>
+                    <p class="text-gray-600 dark:text-gray-400">إدارة بيانات الموظفين وحالاتهم</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="exportEmployees()" class="btn-secondary">
+                        <i class="fas fa-download ml-1"></i> تصدير
+                    </button>
+                    <button onclick="showEmployeeModal()" class="btn-primary">
+                        <i class="fas fa-plus ml-1"></i> إضافة موظف جديد
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="card mb-6">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <input type="text" id="employee-search" placeholder="البحث في الموظفين..." class="search-box"
+                            oninput="searchEmployees()">
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <select id="department-filter" class="input-field max-w-xs" onchange="filterEmployees()">
+                            <option value="">جميع الأقسام</option>
+                        </select>
+                        <select id="status-filter" class="input-field max-w-xs" onchange="filterEmployees()">
+                            <option value="">جميع الحالات</option>
+                            <option value="نشط">نشط</option>
+                            <option value="مستقيل">مستقيل</option>
+                            <option value="منهي الخدمة">منهي الخدمة</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="active-filters" class="mt-4"></div>
+            </div>
+
+            <div class="card">
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <th class="text-right py-4 px-4 font-semibold">الاسم</th>
+                                <th class="text-right py-4 px-4 font-semibold">الرقم الوظيفي</th>
+                                <th class="text-right py-4 px-4 font-semibold">القسم</th>
+                                <th class="text-right py-4 px-4 font-semibold">الوظيفة</th>
+                                <th class="text-right py-4 px-4 font-semibold">تاريخ التوظيف</th>
+                                <th class="text-right py-4 px-4 font-semibold">الحالة</th>
+                                <th class="text-right py-4 px-4 font-semibold">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employees-table">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="employees-pagination" class="mt-4 flex justify-center"></div>
+            </div>
+        </div>
+
+        <!-- Resignations Page -->
+        <div id="resignations-page" class="page hidden fade-in">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold">إدارة الاستقالات</h2>
+                    <p class="text-gray-600 dark:text-gray-400">متابعة طلبات الاستقالة والموافقة عليها</p>
+                </div>
+                <button onclick="showResignationModal()" class="btn-primary">
+                    <i class="fas fa-plus ml-1"></i> إضافة استقالة
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <th class="text-right py-4 px-4 font-semibold">اسم الموظف</th>
+                                <th class="text-right py-4 px-4 font-semibold">تاريخ الاستقالة</th>
+                                <th class="text-right py-4 px-4 font-semibold">تاريخ آخر يوم عمل</th>
+                                <th class="text-right py-4 px-4 font-semibold">سبب الاستقالة</th>
+                                <th class="text-right py-4 px-4 font-semibold">الحالة</th>
+                                <th class="text-right py-4 px-4 font-semibold">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resignations-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminations Page -->
+        <div id="terminations-page" class="page hidden fade-in">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold">إدارة إنهاء الخدمات</h2>
+                    <p class="text-gray-600 dark:text-gray-400">إدارة حالات إنهاء خدمات الموظفين</p>
+                </div>
+                <button onclick="showTerminationModal()" class="btn-primary">
+                    <i class="fas fa-plus ml-1"></i> إضافة إنهاء خدمة
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <th class="text-right py-4 px-4 font-semibold">اسم الموظف</th>
+                                <th class="text-right py-4 px-4 font-semibold">تاريخ إنهاء الخدمة</th>
+                                <th class="text-right py-4 px-4 font-semibold">نوع الإنهاء</th>
+                                <th class="text-right py-4 px-4 font-semibold">سبب إنهاء الخدمة</th>
+                                <th class="text-right py-4 px-4 font-semibold">الحالة</th>
+                                <th class="text-right py-4 px-4 font-semibold">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="terminations-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaves Page -->
+        <div id="leaves-page" class="page hidden fade-in">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold">إدارة الإجازات</h2>
+                    <p class="text-gray-600 dark:text-gray-400">متابعة طلبات الإجازات والموافقة عليها</p>
+                </div>
+                <button onclick="showLeaveModal()" class="btn-primary">
+                    <i class="fas fa-plus ml-1"></i> إضافة إجازة
+                </button>
+            </div>
+
+            <!-- Leave Type Tabs -->
+            <div class="mb-6">
+                <div class="border-b border-gray-200 dark:border-gray-700">
+                    <nav class="flex space-x-8 space-x-reverse">
+                        <button onclick="showLeaveType('all')" id="all-tab"
+                            class="leave-tab py-2 px-1 border-b-2 border-primary text-primary font-medium text-sm">
+                            جميع الإجازات
+                        </button>
+                        <button onclick="showLeaveType('annual')" id="annual-tab"
+                            class="leave-tab py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
+                            الإجازات السنوية
+                        </button>
+                        <button onclick="showLeaveType('monthly')" id="monthly-tab"
+                            class="leave-tab py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
+                            الإجازات الشهرية
+                        </button>
+                        <button onclick="showLeaveType('sick')" id="sick-tab"
+                            class="leave-tab py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
+                            الإجازات المرضية
+                        </button>
+                        <button onclick="showLeaveType('emergency')" id="emergency-tab"
+                            class="leave-tab py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
+                            الإجازات الطارئة
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <th class="text-right py-4 px-4 font-semibold">اسم الموظف</th>
+                                <th class="text-right py-4 px-4 font-semibold">تاريخ البداية</th>
+                                <th class="text-right py-4 px-4 font-semibold">تاريخ النهاية</th>
+                                <th class="text-right py-4 px-4 font-semibold">عدد الأيام</th>
+                                <th class="text-right py-4 px-4 font-semibold">نوع الإجازة</th>
+                                <th class="text-right py-4 px-4 font-semibold">الحالة</th>
+                                <th class="text-right py-4 px-4 font-semibold">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaves-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Page -->
+        <div id="reports-page" class="page hidden fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">التقارير والإحصائيات</h2>
+                <p class="text-gray-600 dark:text-gray-400">تقارير مفصلة عن حالة الموظفين والأداء</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="card cursor-pointer hover:shadow-xl transition-shadow"
+                    onclick="generateReport('employees')">
+                    <div class="text-center">
+                        <i class="fas fa-users text-4xl text-primary mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">تقرير الموظفين</h3>
+                        <p class="text-gray-600 dark:text-gray-400">تقرير شامل عن جميع الموظفين وحالاتهم</p>
+                    </div>
+                </div>
+
+                <div class="card cursor-pointer hover:shadow-xl transition-shadow"
+                    onclick="generateReport('attendance')">
+                    <div class="text-center">
+                        <i class="fas fa-clock text-4xl text-green-500 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">تقرير الحضور</h3>
+                        <p class="text-gray-600 dark:text-gray-400">إحصائيات الحضور والغياب</p>
+                    </div>
+                </div>
+
+                <div class="card cursor-pointer hover:shadow-xl transition-shadow" onclick="generateReport('leaves')">
+                    <div class="text-center">
+                        <i class="fas fa-calendar-alt text-4xl text-blue-500 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">تقرير الإجازات</h3>
+                        <p class="text-gray-600 dark:text-gray-400">تفاصيل الإجازات المستخدمة والمتبقية</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="text-lg font-semibold mb-4">تقرير مخصص</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">من تاريخ</label>
+                        <input type="date" id="report-from-date" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">إلى تاريخ</label>
+                        <input type="date" id="report-to-date" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">نوع التقرير</label>
+                        <select id="report-type" class="input-field">
+                            <option value="summary">ملخص عام</option>
+                            <option value="detailed">تفصيلي</option>
+                            <option value="department">حسب القسم</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="generateCustomReport()" class="btn-primary">
+                    <i class="fas fa-file-alt ml-1"></i> إنشاء التقرير
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings-page" class="page hidden fade-in">
+            <h2 class="text-2xl font-bold mb-6">الإعدادات</h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">إعدادات المؤسسة</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">اسم المؤسسة</label>
+                            <input type="text" id="company-name" class="input-field" placeholder="أدخل اسم المؤسسة">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">عنوان المؤسسة</label>
+                            <input type="text" id="company-address" class="input-field"
+                                placeholder="أدخل عنوان المؤسسة">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">رقم الهاتف</label>
+                            <input type="tel" id="company-phone" class="input-field" placeholder="أدخل رقم الهاتف">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">البريد الإلكتروني</label>
+                            <input type="email" id="company-email" class="input-field"
+                                placeholder="أدخل البريد الإلكتروني">
+                        </div>
+                        <button onclick="saveSettings()" class="btn-primary">
+                            <i class="fas fa-save ml-1"></i> حفظ الإعدادات
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">إعدادات النظام</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">عدد أيام الإجازة السنوية</label>
+                            <input type="number" id="annual-leave-days" class="input-field" placeholder="30">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">عدد أيام الإجازة المرضية</label>
+                            <input type="number" id="sick-leave-days" class="input-field" placeholder="15">
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="auto-approve" class="ml-2">
+                            <label for="auto-approve" class="text-sm">الموافقة التلقائية على الإجازات</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="email-notifications" class="ml-2">
+                            <label for="email-notifications" class="text-sm">إرسال إشعارات بريد إلكتروني</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">أدوات النظام</h3>
+                    <div class="space-y-4">
+                        <button onclick="exportAllData()"
+                            class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                            <i class="fas fa-download ml-1"></i> تصدير جميع البيانات
+                        </button>
+                        <button onclick="printReport()"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                            <i class="fas fa-print ml-1"></i> طباعة تقرير شامل
+                        </button>
+                        <button onclick="backupData()"
+                            class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                            <i class="fas fa-cloud-upload-alt ml-1"></i> نسخ احتياطي Firebase
+                        </button>
+                        <button onclick="resetSystem()"
+                            class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                            <i class="fas fa-refresh ml-1"></i> إعادة تعيين النظام
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">الأقسام</h3>
+                    <div class="space-y-4">
+                        <div id="departments-list" class="space-y-2">
+                            <!-- Departments will be populated here -->
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="new-department" class="input-field flex-1"
+                                placeholder="إضافة قسم جديد">
+                            <button onclick="addDepartment()" class="btn-primary">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Employee Modal -->
+    <div id="employee-modal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 modal-backdrop hidden flex items-center justify-center z-50 p-4 print-hidden">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">إضافة موظف جديد</h3>
+                    <button onclick="hideModal('employee-modal')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="employee-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">الاسم الأول</label>
+                            <input type="text" name="firstName" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">الاسم الأخير</label>
+                            <input type="text" name="lastName" class="input-field" required>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">الرقم الوظيفي</label>
+                            <input type="text" name="employeeId" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">رقم الهوية</label>
+                            <input type="text" name="nationalId" class="input-field" required>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">القسم</label>
+                            <select name="department" class="input-field" required>
+                                <option value="">اختر القسم</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">المسمى الوظيفي</label>
+                            <input type="text" name="position" class="input-field" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">تاريخ التوظيف</label>
+                        <input type="date" name="hireDate" class="input-field" required>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">رقم الهاتف</label>
+                            <input type="tel" name="phone" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">البريد الإلكتروني</label>
+                            <input type="email" name="email" class="input-field" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">العنوان</label>
+                        <textarea name="address" class="input-field" rows="2" required></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-2 space-x-reverse pt-4">
+                        <button type="button" onclick="hideModal('employee-modal')" class="btn-secondary">
+                            إلغاء
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save ml-1"></i> إضافة
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resignation Modal -->
+    <div id="resignation-modal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 modal-backdrop hidden flex items-center justify-center z-50 p-4 print-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">إضافة استقالة</h3>
+                    <button onclick="hideModal('resignation-modal')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="resignation-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">الموظف</label>
+                        <select name="employeeId" class="input-field" required>
+                            <option value="">اختر الموظف</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">تاريخ تقديم الاستقالة</label>
+                        <input type="date" name="resignationDate" class="input-field" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">تاريخ آخر يوم عمل</label>
+                        <input type="date" name="lastWorkDay" class="input-field" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">سبب الاستقالة</label>
+                        <select name="resignationReason" class="input-field" required>
+                            <option value="">اختر السبب</option>
+                            <option value="فرصة أفضل">فرصة أفضل</option>
+                            <option value="ظروف شخصية">ظروف شخصية</option>
+                            <option value="تغيير المهنة">تغيير المهنة</option>
+                            <option value="عدم الرضا عن العمل">عدم الرضا عن العمل</option>
+                            <option value="أسباب صحية">أسباب صحية</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">تفاصيل إضافية</label>
+                        <textarea name="details" class="input-field" rows="3"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-2 space-x-reverse pt-4">
+                        <button type="button" onclick="hideModal('resignation-modal')" class="btn-secondary">
+                            إلغاء
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save ml-1"></i> إضافة
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Termination Modal -->
+    <div id="termination-modal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 modal-backdrop hidden flex items-center justify-center z-50 p-4 print-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">إضافة إنهاء خدمة</h3>
+                    <button onclick="hideModal('termination-modal')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="termination-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">الموظف</label>
+                        <select name="employeeId" class="input-field" required>
+                            <option value="">اختر الموظف</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">تاريخ إنهاء الخدمة</label>
+                        <input type="date" name="terminationDate" class="input-field" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">نوع الإنهاء</label>
+                        <select name="terminationType" class="input-field" required>
+                            <option value="">اختر النوع</option>
+                            <option value="إنهاء فترة التجربة">إنهاء فترة التجربة</option>
+                            <option value="فصل تأديبي">فصل تأديبي</option>
+                            <option value="إنهاء العقد">إنهاء العقد</option>
+                            <option value="تقاعد">تقاعد</option>
+                            <option value="وفاة">وفاة</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">سبب إنهاء الخدمة</label>
+                        <textarea name="reason" class="input-field" rows="3" required></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-2 space-x-reverse pt-4">
+                        <button type="button" onclick="hideModal('termination-modal')" class="btn-secondary">
+                            إلغاء
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save ml-1"></i> إضافة
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Modal -->
+    <div id="leave-modal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 modal-backdrop hidden flex items-center justify-center z-50 p-4 print-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">إضافة إجازة</h3>
+                    <button onclick="hideModal('leave-modal')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="leave-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">الموظف</label>
+                        <select name="employeeId" class="input-field" required>
+                            <option value="">اختر الموظف</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">نوع الإجازة</label>
+                        <select name="leaveType" class="input-field" required>
+                            <option value="">اختر نوع الإجازة</option>
+                            <option value="annual">إجازة سنوية</option>
+                            <option value="monthly">إجازة شهرية</option>
+                            <option value="sick">إجازة مرضية</option>
+                            <option value="emergency">إجازة طارئة</option>
+                            <option value="maternity">إجازة أمومة</option>
+                            <option value="paternity">إجازة أبوة</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">تاريخ البداية</label>
+                        <input type="date" name="startDate" class="input-field" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">تاريخ النهاية</label>
+                        <input type="date" name="endDate" class="input-field" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">السبب</label>
+                        <textarea name="reason" class="input-field" rows="3"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-2 space-x-reverse pt-4">
+                        <button type="button" onclick="hideModal('leave-modal')" class="btn-secondary">
+                            إلغاء
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save ml-1"></i> إضافة
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <div class="flex items-center">
+            <i id="notification-icon" class="fas fa-check-circle ml-2"></i>
+            <span id="notification-text">تم الحفظ بنجاح!</span>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode setup
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Global variables
+        let employees = [];
+        let resignations = [];
+        let terminations = [];
+        let leaves = [];
+        let departments = ["سائقين","مشرفة باص",'الموارد البشرية', 'المالية', 'تقنية المعلومات', 'التسويق', 'المبيعات', 'الإدارة العامة'];
+        let currentLeaveType = 'all';
+        let currentPage = 'dashboard';
+
+        // Firebase helper functions
+        function getFirestoreInstance() {
+            if (!window.db) {
+                throw new Error('Firebase لم يتم تهيئته بعد. يرجى التأكد من إعدادات Firebase.');
+            }
+            return window.db;
+        }
+
+        function getFirestoreFunctions() {
+            if (!window.firestore) {
+                throw new Error('وظائف Firestore غير متاحة');
+            }
+            return window.firestore;
+        }
+
+        // Utility functions
+        function showLoading() {
+            document.getElementById('loading-indicator').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-indicator').classList.add('hidden');
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Firebase Database functions
+        async function loadData() {
+            try {
+                showLoading();
+
+                const db = getFirestoreInstance();
+                const { collection, getDocs } = getFirestoreFunctions();
+
+                // Load employees
+                const employeesSnapshot = await getDocs(collection(db, 'employees'));
+                employees = employeesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Load resignations
+                const resignationsSnapshot = await getDocs(collection(db, 'resignations'));
+                resignations = resignationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Load terminations
+                const terminationsSnapshot = await getDocs(collection(db, 'terminations'));
+                terminations = terminationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Load leaves
+                const leavesSnapshot = await getDocs(collection(db, 'leaves'));
+                leaves = leavesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Load departments
+                try {
+                    const departmentsSnapshot = await getDocs(collection(db, 'departments'));
+                    if (!departmentsSnapshot.empty) {
+                        departments = departmentsSnapshot.docs.map(doc => doc.data().name);
+                    }
+                } catch (error) {
+                    console.log('استخدام الأقسام الافتراضية:', error.message);
+                }
+
+                hideLoading();
+                updateUI();
+                showNotification('تم تحميل البيانات من Firebase بنجاح', 'success');
+            } catch (error) {
+                hideLoading();
+                console.error('خطأ في تحميل البيانات من Firebase:', error);
+                showNotification('خطأ في تحميل البيانات: ' + error.message, 'error');
+
+                // Fallback to localStorage
+                try {
+                    employees = JSON.parse(localStorage.getItem('employees') || '[]');
+                    resignations = JSON.parse(localStorage.getItem('resignations') || '[]');
+                    terminations = JSON.parse(localStorage.getItem('terminations') || '[]');
+                    leaves = JSON.parse(localStorage.getItem('leaves') || '[]');
+                    updateUI();
+                    showNotification('تم تحميل البيانات المحلية كنسخة احتياطية', 'warning');
+                } catch (localError) {
+                    console.error('خطأ في تحميل البيانات المحلية:', localError);
+                    updateUI();
+                }
+            }
+        }
+
+        async function saveEmployee(employeeData) {
+            try {
+                showLoading();
+
+                const db = getFirestoreInstance();
+                const { collection, addDoc } = getFirestoreFunctions();
+
+                const docRef = await addDoc(collection(db, 'employees'), {
+                    ...employeeData,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+
+                const newEmployee = { id: docRef.id, ...employeeData };
+                employees.push(newEmployee);
+
+                hideLoading();
+                return docRef.id;
+            } catch (error) {
+                hideLoading();
+                console.error('خطأ في حفظ الموظف في Firebase:', error);
+
+                // Fallback to localStorage
+                const id = generateId();
+                const employee = { id, ...employeeData };
+                employees.push(employee);
+                localStorage.setItem('employees', JSON.stringify(employees));
+                showNotification('تم حفظ الموظف محلياً (خطأ في Firebase)', 'warning');
+                return id;
+            }
+        }
+
+        async function updateEmployee(id, employeeData) {
+            try {
+                showLoading();
+
+                const db = getFirestoreInstance();
+                const { doc, updateDoc } = getFirestoreFunctions();
+
+                await updateDoc(doc(db, 'employees', id), {
+                    ...employeeData,
+                    updatedAt: new Date().toISOString()
+                });
+
+                const index = employees.findIndex(emp => emp.id === id);
+                if (index !== -1) {
+                    employees[index] = { id, ...employeeData };
+                }
+
+                hideLoading();
+            } catch (error) {
+                hideLoading();
+                console.error('خطأ في تحديث الموظف في Firebase:', error);
+
+                // Fallback to localStorage
+                const index = employees.findIndex(emp => emp.id === id);
+                if (index !== -1) {
+                    employees[index] = { id, ...employeeData };
+                    localStorage.setItem('employees', JSON.stringify(employees));
+                }
+                throw error;
+            }
+        }
+
+        async function deleteEmployee(id) {
+            try {
+                showLoading();
+
+                const db = getFirestoreInstance();
+                const { doc, deleteDoc } = getFirestoreFunctions();
+
+                await deleteDoc(doc(db, 'employees', id));
+                employees = employees.filter(emp => emp.id !== id);
+
+                hideLoading();
+            } catch (error) {
+                hideLoading();
+                console.error('خطأ في حذف الموظف من Firebase:', error);
+
+                // Fallback to localStorage
+                employees = employees.filter(emp => emp.id !== id);
+                localStorage.setItem('employees', JSON.stringify(employees));
+                throw error;
+            }
+        }
+
+        async function saveResignation(resignationData) {
+            try {
+                const db = getFirestoreInstance();
+                const { collection, addDoc } = getFirestoreFunctions();
+
+                const docRef = await addDoc(collection(db, 'resignations'), {
+                    ...resignationData,
+                    createdAt: new Date().toISOString()
+                });
+
+                const newResignation = { id: docRef.id, ...resignationData };
+                resignations.push(newResignation);
+
+                return docRef.id;
+            } catch (error) {
+                console.error('خطأ في حفظ الاستقالة في Firebase:', error);
+
+                // Fallback to localStorage
+                const id = generateId();
+                const resignation = { id, ...resignationData };
+                resignations.push(resignation);
+                localStorage.setItem('resignations', JSON.stringify(resignations));
+                return id;
+            }
+        }
+
+        async function saveTermination(terminationData) {
+            try {
+                const db = getFirestoreInstance();
+                const { collection, addDoc } = getFirestoreFunctions();
+
+                const docRef = await addDoc(collection(db, 'terminations'), {
+                    ...terminationData,
+                    createdAt: new Date().toISOString()
+                });
+
+                const newTermination = { id: docRef.id, ...terminationData };
+                terminations.push(newTermination);
+
+                return docRef.id;
+            } catch (error) {
+                console.error('خطأ في حفظ إنهاء الخدمة في Firebase:', error);
+
+                // Fallback to localStorage
+                const id = generateId();
+                const termination = { id, ...terminationData };
+                terminations.push(termination);
+                localStorage.setItem('terminations', JSON.stringify(terminations));
+                return id;
+            }
+        }
+
+        async function saveLeave(leaveData) {
+            try {
+                const db = getFirestoreInstance();
+                const { collection, addDoc } = getFirestoreFunctions();
+
+                const docRef = await addDoc(collection(db, 'leaves'), {
+                    ...leaveData,
+                    createdAt: new Date().toISOString()
+                });
+
+                const newLeave = { id: docRef.id, ...leaveData };
+                leaves.push(newLeave);
+
+                return docRef.id;
+            } catch (error) {
+                console.error('خطأ في حفظ الإجازة في Firebase:', error);
+
+                // Fallback to localStorage
+                const id = generateId();
+                const leave = { id, ...leaveData };
+                leaves.push(leave);
+                localStorage.setItem('leaves', JSON.stringify(leaves));
+                return id;
+            }
+        }
+
+        async function updateResignationStatus(id, status) {
+            try {
+                const db = getFirestoreInstance();
+                const { doc, updateDoc } = getFirestoreFunctions();
+
+                await updateDoc(doc(db, 'resignations', id), {
+                    status: status,
+                    updatedAt: new Date().toISOString()
+                });
+
+                const resignation = resignations.find(r => r.id === id);
+                if (resignation) {
+                    resignation.status = status;
+                }
+            } catch (error) {
+                console.error('خطأ في تحديث حالة الاستقالة في Firebase:', error);
+
+                // Fallback to localStorage
+                const resignation = resignations.find(r => r.id === id);
+                if (resignation) {
+                    resignation.status = status;
+                    localStorage.setItem('resignations', JSON.stringify(resignations));
+                }
+                throw error;
+            }
+        }
+
+        async function updateLeaveStatus(id, status) {
+            try {
+                const db = getFirestoreInstance();
+                const { doc, updateDoc } = getFirestoreFunctions();
+
+                await updateDoc(doc(db, 'leaves', id), {
+                    status: status,
+                    updatedAt: new Date().toISOString()
+                });
+
+                const leave = leaves.find(l => l.id === id);
+                if (leave) {
+                    leave.status = status;
+                }
+            } catch (error) {
+                console.error('خطأ في تحديث حالة الإجازة في Firebase:', error);
+
+                // Fallback to localStorage
+                const leave = leaves.find(l => l.id === id);
+                if (leave) {
+                    leave.status = status;
+                    localStorage.setItem('leaves', JSON.stringify(leaves));
+                }
+                throw error;
+            }
+        }
+
+        async function deleteLeave(id) {
+            try {
+                const db = getFirestoreInstance();
+                const { doc, deleteDoc } = getFirestoreFunctions();
+
+                await deleteDoc(doc(db, 'leaves', id));
+                leaves = leaves.filter(leave => leave.id !== id);
+            } catch (error) {
+                console.error('خطأ في حذف الإجازة من Firebase:', error);
+
+                // Fallback to localStorage
+                leaves = leaves.filter(leave => leave.id !== id);
+                localStorage.setItem('leaves', JSON.stringify(leaves));
+                throw error;
+            }
+        }
+
+        async function saveDepartments() {
+            try {
+                const db = getFirestoreInstance();
+                const { collection, doc, setDoc } = getFirestoreFunctions();
+
+                // Save each department as a separate document
+                for (let i = 0; i < departments.length; i++) {
+                    await setDoc(doc(db, 'departments', `dept_${i}`), {
+                        name: departments[i],
+                        order: i,
+                        updatedAt: new Date().toISOString()
+                    });
+                }
+            } catch (error) {
+                console.error('خطأ في حفظ الأقسام في Firebase:', error);
+
+                // Fallback to localStorage
+                localStorage.setItem('departments', JSON.stringify(departments));
+            }
+        }
+
+        // Navigation functions
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+
+            // Show selected page
+            document.getElementById(pageId + '-page').classList.remove('hidden');
+
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Find and activate current nav item
+            const navButtons = document.querySelectorAll('.nav-item');
+            navButtons.forEach(btn => {
+                if (btn.textContent.includes(getPageTitle(pageId))) {
+                    btn.classList.add('active');
+                }
+            });
+
+            currentPage = pageId;
+
+            // Refresh page content
+            switch (pageId) {
+                case 'dashboard':
+                    updateDashboard();
+                    break;
+                case 'employees':
+                    renderEmployees();
+                    populateDepartmentFilter();
+                    break;
+                case 'resignations':
+                    renderResignations();
+                    break;
+                case 'terminations':
+                    renderTerminations();
+                    break;
+                case 'leaves':
+                    renderLeaves();
+                    break;
+                case 'reports':
+                    updateReportsPage();
+                    break;
+                case 'settings':
+                    populateSettings();
+                    break;
+            }
+        }
+
+        function getPageTitle(pageId) {
+            const titles = {
+                'dashboard': 'لوحة التحكم',
+                'employees': 'الموظفون',
+                'resignations': 'الاستقالات',
+                'terminations': 'إنهاء الخدمات',
+                'leaves': 'الإجازات',
+                'reports': 'التقارير',
+                'settings': 'الإعدادات'
+            };
+            return titles[pageId] || '';
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Dashboard functions
+        function updateDashboard() {
+            updateStatistics();
+            updateCharts();
+            updateRecentActivities();
+        }
+
+        function updateStatistics() {
+            const totalEmployees = employees.length;
+            const activeEmployees = employees.filter(emp => (emp.status || 'نشط') === 'نشط').length;
+            const pendingResignations = resignations.filter(res => (res.status || 'في الانتظار') === 'في الانتظار').length;
+            const activeLeaves = leaves.filter(leave => {
+                const today = new Date();
+                const startDate = new Date(leave.startDate);
+                const endDate = new Date(leave.endDate);
+                return today >= startDate && today <= endDate && (leave.status || 'في الانتظار') === 'معتمد';
+            }).length;
+
+            document.getElementById('total-employees').textContent = totalEmployees;
+            document.getElementById('active-employees').textContent = activeEmployees;
+            document.getElementById('pending-resignations').textContent = pendingResignations;
+            document.getElementById('active-leaves').textContent = activeLeaves;
+        }
+
+        function updateCharts() {
+            updateDepartmentChart();
+            updateLeavesChart();
+        }
+
+        function updateDepartmentChart() {
+            const canvas = document.getElementById('department-chart');
+            const ctx = canvas.getContext('2d');
+
+            // Clear previous chart
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Count employees by department
+            const departmentCounts = {};
+            departments.forEach(dept => departmentCounts[dept] = 0);
+            employees.forEach(emp => {
+                if (departmentCounts.hasOwnProperty(emp.department)) {
+                    departmentCounts[emp.department]++;
+                }
+            });
+
+            if (window.departmentChart) {
+                window.departmentChart.destroy();
+            }
+
+            window.departmentChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(departmentCounts),
+                    datasets: [{
+                        data: Object.values(departmentCounts),
+                        backgroundColor: [
+                            '#5D5CDE', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateLeavesChart() {
+            const canvas = document.getElementById('leaves-chart');
+            const ctx = canvas.getContext('2d');
+
+            // Clear previous chart
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Count leaves by type for current year
+            const currentYear = new Date().getFullYear();
+            const leaveTypes = ['annual', 'monthly', 'sick', 'emergency'];
+            const leaveTypeNames = {
+                'annual': 'سنوية',
+                'monthly': 'شهرية',
+                'sick': 'مرضية',
+                'emergency': 'طارئة'
+            };
+
+            const leaveCounts = {};
+            leaveTypes.forEach(type => leaveCounts[leaveTypeNames[type]] = 0);
+
+            leaves.forEach(leave => {
+                const leaveYear = new Date(leave.startDate).getFullYear();
+                if (leaveYear === currentYear && leaveTypeNames[leave.leaveType]) {
+                    leaveCounts[leaveTypeNames[leave.leaveType]]++;
+                }
+            });
+
+            if (window.leavesChart) {
+                window.leavesChart.destroy();
+            }
+
+            window.leavesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(leaveCounts),
+                    datasets: [{
+                        label: 'عدد الإجازات',
+                        data: Object.values(leaveCounts),
+                        backgroundColor: '#5D5CDE'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateRecentActivities() {
+            const activities = [];
+
+            // Add recent employees
+            const recentEmployees = employees
+                .filter(emp => emp.hireDate)
+                .sort((a, b) => new Date(b.hireDate) - new Date(a.hireDate))
+                .slice(0, 3);
+
+            recentEmployees.forEach(emp => {
+                activities.push({
+                    type: 'employee',
+                    message: `تم تعيين موظف جديد: ${emp.firstName} ${emp.lastName}`,
+                    date: emp.hireDate,
+                    icon: 'fas fa-user-plus',
+                    color: 'text-green-500'
+                });
+            });
+
+            // Add recent leaves
+            const recentLeaves = leaves
+                .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+                .slice(0, 3);
+
+            recentLeaves.forEach(leave => {
+                const employee = employees.find(emp => emp.id === leave.employeeId);
+                if (employee) {
+                    activities.push({
+                        type: 'leave',
+                        message: `طلب إجازة من: ${employee.firstName} ${employee.lastName}`,
+                        date: leave.startDate,
+                        icon: 'fas fa-calendar-alt',
+                        color: 'text-blue-500'
+                    });
+                }
+            });
+
+            // Sort all activities by date
+            activities.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // Render activities
+            const activitiesContainer = document.getElementById('recent-activities');
+            activitiesContainer.innerHTML = '';
+
+            if (activities.length === 0) {
+                activitiesContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-4">لا توجد أنشطة حديثة</p>';
+                return;
+            }
+
+            activities.slice(0, 5).forEach(activity => {
+                const activityElement = document.createElement('div');
+                activityElement.className = 'flex items-center space-x-3 space-x-reverse p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors';
+                activityElement.innerHTML = `
+                    <div class="flex-shrink-0">
+                        <i class="${activity.icon} ${activity.color}"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm">${activity.message}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${new Date(activity.date).toLocaleDateString('en-US')}</p>
+                    </div>
+                `;
+                activitiesContainer.appendChild(activityElement);
+            });
+        }
+
+        // Employee functions
+        function renderEmployees() {
+            const tbody = document.getElementById('employees-table');
+            tbody.innerHTML = '';
+
+            const filteredEmployees = getFilteredEmployees();
+
+            if (filteredEmployees.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-500 dark:text-gray-400">لا توجد بيانات</td></tr>';
+                return;
+            }
+
+            filteredEmployees.forEach(employee => {
+                const row = document.createElement('tr');
+                row.className = 'table-row border-b border-gray-200 dark:border-gray-700';
+                row.innerHTML = `
+                    <td class="py-4 px-4">${employee.firstName} ${employee.lastName}</td>
+                    <td class="py-4 px-4">${employee.employeeId}</td>
+                    <td class="py-4 px-4">${employee.department}</td>
+                    <td class="py-4 px-4">${employee.position}</td>
+                    <td class="py-4 px-4">${employee.hireDate ? new Date(employee.hireDate).toLocaleDateString('en-US') : 'غير محدد'}</td>
+                    <td class="py-4 px-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(employee.status)}">
+                            ${employee.status || 'نشط'}
+                        </span>
+                    </td>
+                    <td class="py-4 px-4">
+                        <div class="flex space-x-2 space-x-reverse">
+                            <button onclick="viewEmployee('${employee.id}')" class="text-blue-600 hover:text-blue-800 text-sm">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="editEmployee('${employee.id}')" class="text-green-600 hover:text-green-800 text-sm">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteEmployeeConfirm('${employee.id}')" class="text-red-600 hover:text-red-800 text-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 'نشط':
+                    return 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100';
+                case 'مستقيل':
+                    return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100';
+                case 'منهي الخدمة':
+                    return 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100';
+                default:
+                    return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100';
+            }
+        }
+
+        function getFilteredEmployees() {
+            let filtered = [...employees];
+
+            // Search filter
+            const searchTerm = document.getElementById('employee-search').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(emp =>
+                    `${emp.firstName} ${emp.lastName}`.toLowerCase().includes(searchTerm) ||
+                    emp.employeeId.toLowerCase().includes(searchTerm) ||
+                    emp.department.toLowerCase().includes(searchTerm) ||
+                    emp.position.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Department filter
+            const departmentFilter = document.getElementById('department-filter').value;
+            if (departmentFilter) {
+                filtered = filtered.filter(emp => emp.department === departmentFilter);
+            }
+
+            // Status filter
+            const statusFilter = document.getElementById('status-filter').value;
+            if (statusFilter) {
+                filtered = filtered.filter(emp => (emp.status || 'نشط') === statusFilter);
+            }
+
+            return filtered;
+        }
+
+        function searchEmployees() {
+            renderEmployees();
+            updateActiveFilters();
+        }
+
+        function filterEmployees() {
+            renderEmployees();
+            updateActiveFilters();
+        }
+
+        function updateActiveFilters() {
+            const filtersContainer = document.getElementById('active-filters');
+            filtersContainer.innerHTML = '';
+
+            const searchTerm = document.getElementById('employee-search').value;
+            const departmentFilter = document.getElementById('department-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+
+            if (searchTerm) {
+                const badge = document.createElement('span');
+                badge.className = 'filter-badge';
+                badge.innerHTML = `البحث: ${searchTerm} <button onclick="clearSearchFilter()" class="mr-1">×</button>`;
+                filtersContainer.appendChild(badge);
+            }
+
+            if (departmentFilter) {
+                const badge = document.createElement('span');
+                badge.className = 'filter-badge';
+                badge.innerHTML = `القسم: ${departmentFilter} <button onclick="clearDepartmentFilter()">×</button>`;
+                filtersContainer.appendChild(badge);
+            }
+
+            if (statusFilter) {
+                const badge = document.createElement('span');
+                badge.className = 'filter-badge';
+                badge.innerHTML = `الحالة: ${statusFilter} <button onclick="clearStatusFilter()">×</button>`;
+                filtersContainer.appendChild(badge);
+            }
+        }
+
+        function clearSearchFilter() {
+            document.getElementById('employee-search').value = '';
+            searchEmployees();
+        }
+
+        function clearDepartmentFilter() {
+            document.getElementById('department-filter').value = '';
+            filterEmployees();
+        }
+
+        function clearStatusFilter() {
+            document.getElementById('status-filter').value = '';
+            filterEmployees();
+        }
+
+        function populateDepartmentFilter() {
+            const select = document.getElementById('department-filter');
+            select.innerHTML = '<option value="">جميع الأقسام</option>';
+            departments.forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept;
+                option.textContent = dept;
+                select.appendChild(option);
+            });
+        }
+
+        // Resignation functions
+        function renderResignations() {
+            const tbody = document.getElementById('resignations-table');
+            tbody.innerHTML = '';
+
+            if (resignations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500 dark:text-gray-400">لا توجد استقالات</td></tr>';
+                return;
+            }
+
+            resignations.forEach(resignation => {
+                const employee = employees.find(emp => emp.id === resignation.employeeId);
+                const employeeName = employee ? `${employee.firstName} ${employee.lastName}` : 'موظف غير موجود';
+
+                const row = document.createElement('tr');
+                row.className = 'table-row border-b border-gray-200 dark:border-gray-700';
+                row.innerHTML = `
+                    <td class="py-4 px-4">${employeeName}</td>
+                    <td class="py-4 px-4">${new Date(resignation.resignationDate).toLocaleDateString('en-US')}</td>
+                    <td class="py-4 px-4">${new Date(resignation.lastWorkDay).toLocaleDateString('en-US')}</td>
+                    <td class="py-4 px-4">${resignation.resignationReason}</td>
+                    <td class="py-4 px-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(resignation.status)}">
+                            ${resignation.status || 'في الانتظار'}
+                        </span>
+                    </td>
+                    <td class="py-4 px-4">
+                        <div class="flex space-x-2 space-x-reverse">
+                            <button onclick="approveResignation('${resignation.id}')" class="text-green-600 hover:text-green-800 text-sm">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button onclick="rejectResignation('${resignation.id}')" class="text-red-600 hover:text-red-800 text-sm">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Termination functions
+        function renderTerminations() {
+            const tbody = document.getElementById('terminations-table');
+            tbody.innerHTML = '';
+
+            if (terminations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500 dark:text-gray-400">لا توجد حالات إنهاء خدمة</td></tr>';
+                return;
+            }
+
+            terminations.forEach(termination => {
+                const employee = employees.find(emp => emp.id === termination.employeeId);
+                const employeeName = employee ? `${employee.firstName} ${employee.lastName}` : 'موظف غير موجود';
+
+                const row = document.createElement('tr');
+                row.className = 'table-row border-b border-gray-200 dark:border-gray-700';
+                row.innerHTML = `
+                    <td class="py-4 px-4">${employeeName}</td>
+                    <td class="py-4 px-4">${new Date(termination.terminationDate).toLocaleDateString('en-US')}</td>
+                    <td class="py-4 px-4">${termination.terminationType}</td>
+                    <td class="py-4 px-4">${termination.reason}</td>
+                    <td class="py-4 px-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                            منهي
+                        </span>
+                    </td>
+                    <td class="py-4 px-4">
+                        <div class="flex space-x-2 space-x-reverse">
+                            <button onclick="viewTermination('${termination.id}')" class="text-blue-600 hover:text-blue-800 text-sm">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Modal functions
+        function showEmployeeModal() {
+            populateEmployeeDepartments();
+            document.getElementById('employee-modal').classList.remove('hidden');
+        }
+
+        function showResignationModal() {
+            populateActiveEmployees('resignation-form');
+            document.getElementById('resignation-modal').classList.remove('hidden');
+        }
+
+        function showTerminationModal() {
+            populateActiveEmployees('termination-form');
+            document.getElementById('termination-modal').classList.remove('hidden');
+        }
+
+        function showLeaveModal() {
+            populateActiveEmployees('leave-form');
+            document.getElementById('leave-modal').classList.remove('hidden');
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function populateEmployeeDepartments() {
+            const select = document.querySelector('#employee-form select[name="department"]');
+            select.innerHTML = '<option value="">اختر القسم</option>';
+            departments.forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept;
+                option.textContent = dept;
+                select.appendChild(option);
+            });
+        }
+
+        function populateActiveEmployees(formId) {
+            const select = document.querySelector(`#${formId} select[name="employeeId"]`);
+            select.innerHTML = '<option value="">اختر الموظف</option>';
+
+            employees.filter(emp => (emp.status || 'نشط') === 'نشط').forEach(employee => {
+                const option = document.createElement('option');
+                option.value = employee.id;
+                option.textContent = `${employee.firstName} ${employee.lastName} (${employee.employeeId})`;
+                select.appendChild(option);
+            });
+        }
+
+        // Form handlers
+        document.getElementById('employee-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            const employee = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                employeeId: formData.get('employeeId'),
+                nationalId: formData.get('nationalId'),
+                department: formData.get('department'),
+                position: formData.get('position'),
+                hireDate: formData.get('hireDate'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                address: formData.get('address'),
+                status: 'نشط'
+            };
+
+            try {
+                await saveEmployee(employee);
+                showNotification('تم إضافة الموظف بنجاح في Firebase', 'success');
+                hideModal('employee-modal');
+                e.target.reset();
+                renderEmployees();
+                updateDashboard();
+            } catch (error) {
+                showNotification('خطأ في إضافة الموظف', 'error');
+            }
+        });
+
+        document.getElementById('resignation-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            const resignation = {
+                employeeId: formData.get('employeeId'),
+                resignationDate: formData.get('resignationDate'),
+                lastWorkDay: formData.get('lastWorkDay'),
+                resignationReason: formData.get('resignationReason'),
+                details: formData.get('details'),
+                status: 'في الانتظار'
+            };
+
+            try {
+                await saveResignation(resignation);
+                showNotification('تم إضافة الاستقالة بنجاح في Firebase', 'success');
+                hideModal('resignation-modal');
+                e.target.reset();
+                renderResignations();
+                updateDashboard();
+            } catch (error) {
+                showNotification('خطأ في إضافة الاستقالة', 'error');
+            }
+        });
+
+        document.getElementById('termination-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            const termination = {
+                employeeId: formData.get('employeeId'),
+                terminationDate: formData.get('terminationDate'),
+                terminationType: formData.get('terminationType'),
+                reason: formData.get('reason'),
+                status: 'منهي'
+            };
+
+            try {
+                await saveTermination(termination);
+
+                // Update employee status
+                const employee = employees.find(emp => emp.id === termination.employeeId);
+                if (employee) {
+                    await updateEmployee(employee.id, { ...employee, status: 'منهي الخدمة' });
+                }
+
+                showNotification('تم إضافة إنهاء الخدمة بنجاح في Firebase', 'success');
+                hideModal('termination-modal');
+                e.target.reset();
+                renderTerminations();
+                renderEmployees();
+                updateDashboard();
+            } catch (error) {
+                showNotification('خطأ في إضافة إنهاء الخدمة', 'error');
+            }
+        });
+
+        document.getElementById('leave-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            const leave = {
+                employeeId: formData.get('employeeId'),
+                leaveType: formData.get('leaveType'),
+                startDate: formData.get('startDate'),
+                endDate: formData.get('endDate'),
+                reason: formData.get('reason'),
+                status: 'في الانتظار'
+            };
+
+            try {
+                await saveLeave(leave);
+                showNotification('تم إضافة الإجازة بنجاح في Firebase', 'success');
+                hideModal('leave-modal');
+                e.target.reset();
+                renderLeaves();
+                updateDashboard();
+            } catch (error) {
+                showNotification('خطأ في إضافة الإجازة', 'error');
+            }
+        });
+
+        // Leave type functions
+        function showLeaveType(type) {
+            currentLeaveType = type;
+
+            // Update tabs
+            document.querySelectorAll('.leave-tab').forEach(tab => {
+                tab.classList.remove('border-primary', 'text-primary');
+                tab.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            document.getElementById(type + '-tab').classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById(type + '-tab').classList.add('border-primary', 'text-primary');
+
+            renderLeaves();
+        }
+
+        function renderLeaves() {
+            const tbody = document.getElementById('leaves-table');
+            tbody.innerHTML = '';
+
+            let filteredLeaves = leaves;
+            if (currentLeaveType !== 'all') {
+                filteredLeaves = leaves.filter(leave => leave.leaveType === currentLeaveType);
+            }
+
+            if (filteredLeaves.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-500 dark:text-gray-400">لا توجد إجازات</td></tr>';
+                return;
+            }
+
+            filteredLeaves.forEach(leave => {
+                const employee = employees.find(emp => emp.id === leave.employeeId);
+                const employeeName = employee ? `${employee.firstName} ${employee.lastName}` : 'موظف غير موجود';
+
+                const startDate = new Date(leave.startDate);
+                const endDate = new Date(leave.endDate);
+                const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+                const leaveTypeNames = {
+                    annual: 'إجازة سنوية',
+                    monthly: 'إجازة شهرية',
+                    sick: 'إجازة مرضية',
+                    emergency: 'إجازة طارئة',
+                    maternity: 'إجازة أمومة',
+                    paternity: 'إجازة أبوة'
+                };
+
+                const row = document.createElement('tr');
+                row.className = 'table-row border-b border-gray-200 dark:border-gray-700';
+                row.innerHTML = `
+                    <td class="py-4 px-4">${employeeName}</td>
+                    <td class="py-4 px-4">${startDate.toLocaleDateString('en-US')}</td>
+                    <td class="py-4 px-4">${endDate.toLocaleDateString('en-US')}</td>
+                    <td class="py-4 px-4">${daysDiff}</td>
+                    <td class="py-4 px-4">${leaveTypeNames[leave.leaveType] || leave.leaveType}</td>
+                    <td class="py-4 px-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(leave.status)}">
+                            ${leave.status || 'في الانتظار'}
+                        </span>
+                    </td>
+                    <td class="py-4 px-4">
+                        <div class="flex space-x-2 space-x-reverse">
+                            <button onclick="approveLeave('${leave.id}')" class="text-green-600 hover:text-green-800 text-sm">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button onclick="rejectLeave('${leave.id}')" class="text-red-600 hover:text-red-800 text-sm">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button onclick="deleteLeaveConfirm('${leave.id}')" class="text-gray-600 hover:text-gray-800 text-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Action functions
+        async function approveLeave(id) {
+            try {
+                await updateLeaveStatus(id, 'معتمد');
+                renderLeaves();
+                updateDashboard();
+                showNotification('تم اعتماد الإجازة', 'success');
+            } catch (error) {
+                showNotification('خطأ في اعتماد الإجازة', 'error');
+            }
+        }
+
+        async function rejectLeave(id) {
+            try {
+                await updateLeaveStatus(id, 'مرفوض');
+                renderLeaves();
+                showNotification('تم رفض الإجازة', 'success');
+            } catch (error) {
+                showNotification('خطأ في رفض الإجازة', 'error');
+            }
+        }
+
+        async function approveResignation(id) {
+            try {
+                await updateResignationStatus(id, 'معتمد');
+
+                // Update employee status
+                const resignation = resignations.find(r => r.id === id);
+                if (resignation) {
+                    const employee = employees.find(emp => emp.id === resignation.employeeId);
+                    if (employee) {
+                        await updateEmployee(employee.id, { ...employee, status: 'مستقيل' });
+                    }
+                }
+
+                renderResignations();
+                renderEmployees();
+                updateDashboard();
+                showNotification('تم اعتماد الاستقالة', 'success');
+            } catch (error) {
+                showNotification('خطأ في اعتماد الاستقالة', 'error');
+            }
+        }
+
+        async function rejectResignation(id) {
+            try {
+                await updateResignationStatus(id, 'مرفوض');
+                renderResignations();
+                showNotification('تم رفض الاستقالة', 'success');
+            } catch (error) {
+                showNotification('خطأ في رفض الاستقالة', 'error');
+            }
+        }
+
+        function deleteEmployeeConfirm(id) {
+            if (confirm('هل أنت متأكد من حذف هذا الموظف؟ سيتم حذف جميع البيانات المرتبطة به.')) {
+                deleteEmployeeAction(id);
+            }
+        }
+
+        async function deleteEmployeeAction(id) {
+            try {
+                await deleteEmployee(id);
+                showNotification('تم حذف الموظف بنجاح من Firebase', 'success');
+                renderEmployees();
+                updateDashboard();
+            } catch (error) {
+                showNotification('خطأ في حذف الموظف', 'error');
+            }
+        }
+
+        function deleteLeaveConfirm(id) {
+            if (confirm('هل أنت متأكد من حذف هذه الإجازة؟')) {
+                deleteLeaveAction(id);
+            }
+        }
+
+        async function deleteLeaveAction(id) {
+            try {
+                await deleteLeave(id);
+                renderLeaves();
+                showNotification('تم حذف الإجازة بنجاح من Firebase', 'success');
+            } catch (error) {
+                showNotification('خطأ في حذف الإجازة', 'error');
+            }
+        }
+
+        // Settings functions
+        function populateSettings() {
+            // Populate departments list
+            const departmentsList = document.getElementById('departments-list');
+            departmentsList.innerHTML = '';
+
+            departments.forEach((dept, index) => {
+                const deptElement = document.createElement('div');
+                deptElement.className = 'flex justify-between items-center p-2 bg-gray-100 dark:bg-gray-700 rounded';
+                deptElement.innerHTML = `
+                    <span>${dept}</span>
+                    <button onclick="removeDepartment(${index})" class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                departmentsList.appendChild(deptElement);
+            });
+        }
+
+        async function addDepartment() {
+            const input = document.getElementById('new-department');
+            const newDept = input.value.trim();
+
+            if (newDept && !departments.includes(newDept)) {
+                departments.push(newDept);
+                await saveDepartments();
+                input.value = '';
+                populateSettings();
+                showNotification('تم إضافة القسم بنجاح في Firebase', 'success');
+            } else if (departments.includes(newDept)) {
+                showNotification('القسم موجود بالفعل', 'error');
+            } else {
+                showNotification('يرجى إدخال اسم القسم', 'error');
+            }
+        }
+
+        async function removeDepartment(index) {
+            if (confirm('هل أنت متأكد من حذف هذا القسم؟')) {
+                departments.splice(index, 1);
+                await saveDepartments();
+                populateSettings();
+                showNotification('تم حذف القسم من Firebase', 'success');
+            }
+        }
+
+        async function saveSettings() {
+            try {
+                const settings = {
+                    companyName: document.getElementById('company-name').value,
+                    companyAddress: document.getElementById('company-address').value,
+                    companyPhone: document.getElementById('company-phone').value,
+                    companyEmail: document.getElementById('company-email').value,
+                    annualLeaveDays: parseInt(document.getElementById('annual-leave-days').value) || 30,
+                    sickLeaveDays: parseInt(document.getElementById('sick-leave-days').value) || 15,
+                    autoApprove: document.getElementById('auto-approve').checked,
+                    emailNotifications: document.getElementById('email-notifications').checked,
+                    updatedAt: new Date().toISOString()
+                };
+
+                const db = getFirestoreInstance();
+                const { doc, setDoc } = getFirestoreFunctions();
+
+                await setDoc(doc(db, 'settings', 'app_settings'), settings);
+                showNotification('تم حفظ الإعدادات بنجاح في Firebase', 'success');
+            } catch (error) {
+                console.error('خطأ في حفظ الإعدادات في Firebase:', error);
+
+                // Fallback to localStorage
+                const settings = {
+                    companyName: document.getElementById('company-name').value,
+                    companyAddress: document.getElementById('company-address').value,
+                    companyPhone: document.getElementById('company-phone').value,
+                    companyEmail: document.getElementById('company-email').value,
+                    annualLeaveDays: parseInt(document.getElementById('annual-leave-days').value) || 30,
+                    sickLeaveDays: parseInt(document.getElementById('sick-leave-days').value) || 15,
+                    autoApprove: document.getElementById('auto-approve').checked,
+                    emailNotifications: document.getElementById('email-notifications').checked
+                };
+
+                localStorage.setItem('settings', JSON.stringify(settings));
+                showNotification('تم حفظ الإعدادات محلياً (خطأ في Firebase)', 'warning');
+            }
+        }
+
+        // Export and utility functions
+        function exportEmployees() {
+            exportToCSV(employees, 'الموظفون');
+        }
+
+        function exportAllData() {
+            const allData = {
+                employees,
+                resignations,
+                terminations,
+                leaves,
+                departments,
+                timestamp: new Date().toISOString(),
+                source: 'Firebase'
+            };
+
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `firebase_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+
+            showNotification('تم تصدير البيانات من Firebase بنجاح', 'success');
+        }
+
+        function exportToCSV(data, filename) {
+            if (data.length === 0) {
+                showNotification('لا توجد بيانات للتصدير', 'error');
+                return;
+            }
+
+            const headers = Object.keys(data[0]);
+            const csvContent = [
+                headers.join(','),
+                ...data.map(row => headers.map(header => row[header] || '').join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+
+            showNotification('تم تصدير البيانات بنجاح', 'success');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        async function backupData() {
+            try {
+                showLoading();
+                const backup = {
+                    employees,
+                    resignations,
+                    terminations,
+                    leaves,
+                    departments,
+                    timestamp: new Date().toISOString(),
+                    source: 'Firebase Backup'
+                };
+
+                const dataStr = JSON.stringify(backup, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `firebase_full_backup_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+
+                hideLoading();
+                showNotification('تم إنشاء النسخة الاحتياطية من Firebase بنجاح', 'success');
+            } catch (error) {
+                hideLoading();
+                showNotification('خطأ في إنشاء النسخة الاحتياطية', 'error');
+            }
+        }
+
+        async function resetSystem() {
+            if (confirm('هل أنت متأكد من إعادة تعيين النظام؟ سيتم حذف جميع البيانات من Firebase!')) {
+                if (confirm('هذا الإجراء لا يمكن التراجع عنه. هل تريد المتابعة؟')) {
+                    try {
+                        showLoading();
+
+                        const db = getFirestoreInstance();
+                        const { collection, getDocs, deleteDoc } = getFirestoreFunctions();
+
+                        // Delete all collections
+                        const collections = ['employees', 'resignations', 'terminations', 'leaves', 'departments', 'settings'];
+
+                        for (const collectionName of collections) {
+                            const snapshot = await getDocs(collection(db, collectionName));
+                            const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+                            await Promise.all(deletePromises);
+                        }
+
+                        // Reset local arrays
+                        employees = [];
+                        resignations = [];
+                        terminations = [];
+                        leaves = [];
+                        departments = ["سائقين","مشرفة باص",'الموارد البشرية', 'المالية', 'تقنية المعلومات', 'التسويق', 'المبيعات', 'الإدارة العامة'];
+
+                        // Clear localStorage backup
+                        localStorage.clear();
+
+                        hideLoading();
+                        updateUI();
+                        showNotification('تم إعادة تعيين النظام وحذف جميع البيانات من Firebase', 'success');
+                    } catch (error) {
+                        hideLoading();
+                        console.error('خطأ في إعادة تعيين النظام:', error);
+                        showNotification('خطأ في إعادة تعيين النظام: ' + error.message, 'error');
+                    }
+                }
+            }
+        }
+
+        // Report functions
+        function generateReport(type) {
+            showNotification(`جاري إنشاء تقرير ${type} من Firebase...`, 'success');
+        }
+
+        function generateCustomReport() {
+            const fromDate = document.getElementById('report-from-date').value;
+            const toDate = document.getElementById('report-to-date').value;
+            const reportType = document.getElementById('report-type').value;
+
+            if (!fromDate || !toDate) {
+                showNotification('يرجى تحديد تاريخ البداية والنهاية', 'error');
+                return;
+            }
+
+            showNotification('جاري إنشاء التقرير المخصص من Firebase...', 'success');
+        }
+
+        function updateReportsPage() {
+            // Placeholder for reports page updates
+        }
+
+        // Placeholder functions for employee actions
+        function viewEmployee(id) {
+            const employee = employees.find(emp => emp.id === id);
+            if (employee) {
+                alert(`تفاصيل الموظف: ${employee.firstName} ${employee.lastName}\nالقسم: ${employee.department}\nالوظيفة: ${employee.position}\nالمصدر: Firebase`);
+            }
+        }
+
+        function editEmployee(id) {
+            showNotification('ميزة التعديل قيد التطوير', 'warning');
+        }
+
+        function viewTermination(id) {
+            const termination = terminations.find(t => t.id === id);
+            if (termination) {
+                const employee = employees.find(emp => emp.id === termination.employeeId);
+                const employeeName = employee ? `${employee.firstName} ${employee.lastName}` : 'موظف غير موجود';
+                alert(`تفاصيل إنهاء الخدمة:\nالموظف: ${employeeName}\nالتاريخ: ${new Date(termination.terminationDate).toLocaleDateString('en-US')}\nالنوع: ${termination.terminationType}\nالسبب: ${termination.reason}\nالمصدر: Firebase`);
+            }
+        }
+
+        // Notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            const notificationIcon = document.getElementById('notification-icon');
+
+            notificationText.textContent = message;
+
+            // Set notification style based on type
+            if (type === 'success') {
+                notification.className = 'notification bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg';
+                notificationIcon.className = 'fas fa-check-circle ml-2';
+            } else if (type === 'error') {
+                notification.className = 'notification bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg';
+                notificationIcon.className = 'fas fa-exclamation-circle ml-2';
+            } else if (type === 'warning') {
+                notification.className = 'notification bg-yellow-500 text-white px-6 py-4 rounded-lg shadow-lg';
+                notificationIcon.className = 'fas fa-exclamation-triangle ml-2';
+            }
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        function updateUI() {
+            if (currentPage === 'dashboard') {
+                updateDashboard();
+            } else if (currentPage === 'employees') {
+                renderEmployees();
+                populateDepartmentFilter();
+            } else if (currentPage === 'leaves') {
+                renderLeaves();
+            } else if (currentPage === 'resignations') {
+                renderResignations();
+            } else if (currentPage === 'terminations') {
+                renderTerminations();
+            }
+        }
+
+        // Initialize app
+        window.initializeApp = async function () {
+            try {
+                // Wait a moment for Firebase to initialize
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                await loadData();
+                showPage('dashboard');
+                showNotification('مرحباً بك في نظام إدارة شؤون الموظفين المتقدم مع Firebase', 'success');
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                showNotification('خطأ في تحميل التطبيق من Firebase', 'error');
+                // Continue with empty data
+                showPage('dashboard');
+            }
+        };
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case '1':
+                        e.preventDefault();
+                        showPage('dashboard');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        showPage('employees');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        showPage('leaves');
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        if (currentPage === 'settings') {
+                            saveSettings();
+                        }
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
