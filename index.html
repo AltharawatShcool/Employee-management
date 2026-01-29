@@ -292,6 +292,18 @@
                         </button>
                     </li>
                     <li class="relative px-6 py-3">
+                        <button id="nav-leave" class="inline-flex items-center w-full text-lg font-semibold py-3 px-2 transition-colors duration-150 hover:text-primary" onclick="showSection('leave')">
+                            <i class="fas fa-calendar-alt ml-3"></i>
+                            <span>الإجازات</span>
+                        </button>
+                    </li>
+                    <li class="relative px-6 py-3">
+                        <button id="nav-absence" class="inline-flex items-center w-full text-lg font-semibold py-3 px-2 transition-colors duration-150 hover:text-primary" onclick="showSection('absence')">
+                            <i class="fas fa-user-clock ml-3"></i>
+                            <span>غياب الموظفين</span>
+                        </button>
+                    </li>
+                    <li class="relative px-6 py-3">
                         <button id="nav-ex-employees" class="inline-flex items-center w-full text-lg font-semibold py-3 px-2 transition-colors duration-150 hover:text-primary" onclick="showSection('ex-employees')">
                             <i class="fas fa-user-slash ml-3"></i>
                             <span>الموظفين المنتهين</span>
@@ -582,6 +594,130 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Leave Section -->
+            <section id="leave-section" class="p-6 hidden fade-in">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                        <h3 class="text-xl font-semibold mb-4 md:mb-0">إدارة الإجازات</h3>
+                        <div>
+                            <button id="add-leave-btn" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg transition-colors duration-150 flex items-center justify-center">
+                                <i class="fas fa-plus ml-2"></i>
+                                <span>إضافة إجازة</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Leave Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الموظف</th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">نوع الإجازة</th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">تاريخ البدء</th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">تاريخ الانتهاء</th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">عدد الأيام</th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الحالة</th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="leave-table">
+                                <tr>
+                                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300" colspan="7">لا يوجد إجازات مسجلة</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Absence Section -->
+            <section id="absence-section" class="p-6 hidden fade-in">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                        <h3 class="text-xl font-semibold mb-4 md:mb-0">حساب غياب الموظفين</h3>
+                        <div>
+                            <button id="add-absence-btn" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg transition-colors duration-150 flex items-center justify-center">
+                                <i class="fas fa-plus ml-2"></i>
+                                <span>تسجيل غياب</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="absence-month-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الشهر</label>
+                            <select id="absence-month-filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base">
+                                <option value="">اختر الشهر</option>
+                                <option value="01">يناير</option>
+                                <option value="02">فبراير</option>
+                                <option value="03">مارس</option>
+                                <option value="04">أبريل</option>
+                                <option value="05">مايو</option>
+                                <option value="06">يونيو</option>
+                                <option value="07">يوليو</option>
+                                <option value="08">أغسطس</option>
+                                <option value="09">سبتمبر</option>
+                                <option value="10">أكتوبر</option>
+                                <option value="11">نوفمبر</option>
+                                <option value="12">ديسمبر</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="absence-year-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">السنة</label>
+                            <input type="number" id="absence-year-filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" min="2020">
+                        </div>
+                        <div>
+                            <label for="absence-employee-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الموظف</label>
+                            <select id="absence-employee-filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base">
+                                <option value="">جميع الموظفين</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Absence Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الموظف</th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">التاريخ</th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">نوع الغياب</th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">السبب</th>
+                                    <th class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="absence-table">
+                                <tr>
+                                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300" colspan="5">لا يوجد حالات غياب مسجلة</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Absence Statistics -->
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">إجمالي الغيابات</p>
+                            <p class="text-2xl font-bold" id="total-absences">0</p>
+                        </div>
+                        <div class="bg-red-50 dark:bg-red-900 dark:bg-opacity-20 rounded-lg p-4">
+                            <p class="text-sm text-red-600 dark:text-red-400">غيابات بدون عذر</p>
+                            <p class="text-2xl font-bold text-red-600 dark:text-red-400" id="absence-without-excuse">0</p>
+                        </div>
+                        <div class="bg-yellow-50 dark:bg-yellow-900 dark:bg-opacity-20 rounded-lg p-4">
+                            <p class="text-sm text-yellow-600 dark:text-yellow-400">غيابات برخصة</p>
+                            <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400" id="absence-with-permission">0</p>
+                        </div>
+                        <div class="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-20 rounded-lg p-4">
+                            <p class="text-sm text-blue-600 dark:text-blue-400">تأخيرات</p>
+                            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="late-count">0</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -937,6 +1073,138 @@
         </div>
     </div>
 
+    <!-- Leave Modal -->
+    <div id="leave-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold" id="leave-modal-title">إضافة إجازة</h3>
+                    <button id="close-leave-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="leave-form">
+                    <input type="hidden" id="leave-id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="leave-employee" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الموظف*</label>
+                            <select id="leave-employee" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" required>
+                                <option value="">اختر الموظف</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="leave-type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">نوع الإجازة*</label>
+                            <select id="leave-type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" required>
+                                <option value="">اختر النوع</option>
+                                <option value="إجازة سنوية">إجازة سنوية</option>
+                                <option value="إجازة مرضية">إجازة مرضية</option>
+                                <option value="إجازة استثنائية">إجازة استثنائية</option>
+                                <option value="إجازة بدون راتب">إجازة بدون راتب</option>
+                                <option value="إجازة أمومة">إجازة أمومة</option>
+                                <option value="إجازة أبوة">إجازة أبوة</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="leave-start-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">تاريخ البدء*</label>
+                            <input type="date" id="leave-start-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" required>
+                        </div>
+                        <div>
+                            <label for="leave-end-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">تاريخ الانتهاء*</label>
+                            <input type="date" id="leave-end-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" required>
+                        </div>
+                        <div>
+                            <label for="leave-days" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">عدد الأيام</label>
+                            <input type="number" id="leave-days" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" readonly>
+                        </div>
+                        <div>
+                            <label for="leave-status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الحالة</label>
+                            <select id="leave-status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base">
+                                <option value="موافق عليه">موافق عليه</option>
+                                <option value="قيد الانتظار">قيد الانتظار</option>
+                                <option value="مرفوض">مرفوض</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="leave-notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ملاحظات</label>
+                            <textarea id="leave-notes" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base"></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end">
+                        <button type="button" id="cancel-leave" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-4 py-2 rounded-lg ml-2 transition-colors duration-150">إلغاء</button>
+                        <button type="submit" id="save-leave" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg transition-colors duration-150">حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Absence Modal -->
+    <div id="absence-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold" id="absence-modal-title">تسجيل غياب</h3>
+                    <button id="close-absence-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="absence-form">
+                    <input type="hidden" id="absence-id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="absence-employee" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الموظف*</label>
+                            <select id="absence-employee" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" required>
+                                <option value="">اختر الموظف</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="absence-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">التاريخ*</label>
+                            <input type="date" id="absence-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" required>
+                        </div>
+                        <div>
+                            <label for="absence-type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">نوع الغياب*</label>
+                            <select id="absence-type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" required>
+                                <option value="">اختر النوع</option>
+                                <option value="غياب كامل">غياب كامل</option>
+                                <option value="غياب جزئي">غياب جزئي</option>
+                                <option value="تأخير">تأخير</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="absence-hours" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">عدد الساعات (للغياب الجزئي)</label>
+                            <input type="number" id="absence-hours" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" min="0" step="0.5">
+                        </div>
+                        <div>
+                            <label for="absence-reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">السبب*</label>
+                            <select id="absence-reason" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base" required>
+                                <option value="">اختر السبب</option>
+                                <option value="بدون عذر">بدون عذر</option>
+                                <option value="برخصة">برخصة</option>
+                                <option value="مرضي">مرضي</option>
+                                <option value="أسباب طارئة">أسباب طارئة</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="absence-status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الحالة</label>
+                            <select id="absence-status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base">
+                                <option value="موثق">موثق</option>
+                                <option value="قيد الاستكمال">قيد الاستكمال</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="absence-notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ملاحظات</label>
+                            <textarea id="absence-notes" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 text-base"></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end">
+                        <button type="button" id="cancel-absence" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-4 py-2 rounded-lg ml-2 transition-colors duration-150">إلغاء</button>
+                        <button type="submit" id="save-absence" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg transition-colors duration-150">حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Termination Modal -->
     <div id="termination-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1033,6 +1301,8 @@
         let employees = [];
         let contracts = [];
         let terminations = [];
+        let leaves = [];
+        let absences = [];
         let currentPage = 1;
         const itemsPerPage = 10;
         let filteredEmployees = [];
@@ -1065,6 +1335,8 @@
             dashboard: document.getElementById('dashboard-section'),
             employees: document.getElementById('employees-section'),
             contracts: document.getElementById('contracts-section'),
+            leave: document.getElementById('leave-section'),
+            absence: document.getElementById('absence-section'),
             'ex-employees': document.getElementById('ex-employees-section'),
             'import-export': document.getElementById('import-export-section'),
             reports: document.getElementById('reports-section')
@@ -1119,6 +1391,8 @@
                 dashboard: 'لوحة المعلومات',
                 employees: 'الموظفين',
                 contracts: 'العقود',
+                leave: 'الإجازات',
+                absence: 'غياب الموظفين',
                 'ex-employees': 'الموظفين المنتهين',
                 'import-export': 'استيراد/تصدير',
                 reports: 'التقارير'
@@ -1186,6 +1460,20 @@
                     ...doc.data()
                 }));
                 
+                // Fetch leaves
+                const leavesSnapshot = await db.collection('leaves').get();
+                leaves = leavesSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                
+                // Fetch absences
+                const absencesSnapshot = await db.collection('absences').get();
+                absences = absencesSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                
                 // Initialize filtered employees
                 filteredEmployees = [...employees];
                 
@@ -1193,9 +1481,14 @@
                 updateEmployeesList();
                 updateContractsList();
                 updateTerminationsList();
+                updateLeavesList();
+                updateAbsencesList();
                 updateDashboard();
                 updateReportEmployeeDropdown();
                 updateTerminationEmployeeDropdown();
+                updateLeaveEmployeeDropdown();
+                updateAbsenceEmployeeDropdown();
+                updateAbsenceEmployeeFilter();
                 
                 hideLoading();
             } catch (error) {
@@ -1240,6 +1533,9 @@
                     updateDashboard();
                     updateReportEmployeeDropdown();
                     updateTerminationEmployeeDropdown();
+                    updateLeaveEmployeeDropdown();
+                    updateAbsenceEmployeeDropdown();
+                    updateAbsenceEmployeeFilter();
                 }
             });
 
@@ -1308,8 +1604,461 @@
                     updateDashboard();
                 }
             });
+
+            // Listen for leave changes
+            db.collection('leaves').onSnapshot(snapshot => {
+                let dataChanged = false;
+                
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === 'added' || change.type === 'modified') {
+                        const leaveData = {
+                            id: change.doc.id,
+                            ...change.doc.data()
+                        };
+                        
+                        const index = leaves.findIndex(l => l.id === leaveData.id);
+                        
+                        if (index === -1) {
+                            leaves.push(leaveData);
+                        } else {
+                            leaves[index] = leaveData;
+                        }
+                        
+                        dataChanged = true;
+                    } else if (change.type === 'removed') {
+                        const removedId = change.doc.id;
+                        leaves = leaves.filter(l => l.id !== removedId);
+                        dataChanged = true;
+                    }
+                });
+                
+                if (dataChanged) {
+                    updateLeavesList();
+                }
+            });
+
+            // Listen for absence changes
+            db.collection('absences').onSnapshot(snapshot => {
+                let dataChanged = false;
+                
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === 'added' || change.type === 'modified') {
+                        const absenceData = {
+                            id: change.doc.id,
+                            ...change.doc.data()
+                        };
+                        
+                        const index = absences.findIndex(a => a.id === absenceData.id);
+                        
+                        if (index === -1) {
+                            absences.push(absenceData);
+                        } else {
+                            absences[index] = absenceData;
+                        }
+                        
+                        dataChanged = true;
+                    } else if (change.type === 'removed') {
+                        const removedId = change.doc.id;
+                        absences = absences.filter(a => a.id !== removedId);
+                        dataChanged = true;
+                    }
+                });
+                
+                if (dataChanged) {
+                    updateAbsencesList();
+                }
+            });
         }
 
+        // LEAVES SECTION
+        document.getElementById('add-leave-btn').addEventListener('click', () => {
+            document.getElementById('leave-modal-title').textContent = 'إضافة إجازة';
+            document.getElementById('leave-form').reset();
+            document.getElementById('leave-id').value = '';
+            updateLeaveEmployeeDropdown();
+            document.getElementById('leave-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('close-leave-modal').addEventListener('click', () => {
+            document.getElementById('leave-modal').classList.add('hidden');
+        });
+
+        document.getElementById('cancel-leave').addEventListener('click', () => {
+            document.getElementById('leave-modal').classList.add('hidden');
+        });
+
+        // Calculate days automatically
+        document.getElementById('leave-start-date').addEventListener('change', calculateLeaveDays);
+        document.getElementById('leave-end-date').addEventListener('change', calculateLeaveDays);
+
+        function calculateLeaveDays() {
+            const startDate = new Date(document.getElementById('leave-start-date').value);
+            const endDate = new Date(document.getElementById('leave-end-date').value);
+            
+            if (startDate && endDate) {
+                const diffTime = Math.abs(endDate - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                document.getElementById('leave-days').value = diffDays;
+            }
+        }
+
+        document.getElementById('leave-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            showLoading();
+            
+            const leaveId = document.getElementById('leave-id').value;
+            const leave = {
+                employeeId: document.getElementById('leave-employee').value,
+                type: document.getElementById('leave-type').value,
+                startDate: document.getElementById('leave-start-date').value,
+                endDate: document.getElementById('leave-end-date').value,
+                days: parseInt(document.getElementById('leave-days').value),
+                status: document.getElementById('leave-status').value,
+                notes: document.getElementById('leave-notes').value
+            };
+            
+            try {
+                if (leaveId) {
+                    await db.collection('leaves').doc(leaveId).update(leave);
+                    showToast('تم تحديث بيانات الإجازة بنجاح');
+                } else {
+                    await db.collection('leaves').add(leave);
+                    showToast('تمت إضافة الإجازة بنجاح');
+                }
+                
+                document.getElementById('leave-modal').classList.add('hidden');
+            } catch (error) {
+                console.error('Error saving leave:', error);
+                showToast('حدث خطأ أثناء حفظ بيانات الإجازة', 'error');
+            }
+            
+            hideLoading();
+        });
+
+        function updateLeavesList() {
+            const tableBody = document.getElementById('leave-table');
+            
+            if (leaves.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300" colspan="7">لا يوجد إجازات مسجلة</td>
+                    </tr>
+                `;
+            } else {
+                tableBody.innerHTML = '';
+                
+                leaves.forEach(leave => {
+                    const employee = employees.find(emp => emp.id === leave.employeeId);
+                    const employeeName = employee ? employee.name : 'غير معروف';
+                    
+                    const row = document.createElement('tr');
+                    row.classList.add('hover:bg-gray-50', 'dark:hover:bg-gray-700');
+                    
+                    let statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+                    if (leave.status === 'قيد الانتظار') {
+                        statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+                    } else if (leave.status === 'مرفوض') {
+                        statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+                    }
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">${employeeName}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">${leave.type || ''}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">${leave.startDate || ''}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">${leave.endDate || ''}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">${leave.days || 0}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                ${leave.status || ''}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm font-medium">
+                            <div class="flex space-x-2 space-x-reverse">
+                                <button class="text-primary hover:text-secondary edit-leave" data-id="${leave.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900 delete-leave" data-id="${leave.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                document.querySelectorAll('.edit-leave').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        editLeave(id);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-leave').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        confirmDelete('leave', id);
+                    });
+                });
+            }
+        }
+
+        function updateLeaveEmployeeDropdown() {
+            const dropdown = document.getElementById('leave-employee');
+            dropdown.innerHTML = '<option value="">اختر الموظف</option>';
+            
+            const activeEmployees = employees.filter(emp => emp.status === 'نشط');
+            
+            activeEmployees.forEach(employee => {
+                const option = document.createElement('option');
+                option.value = employee.id;
+                option.textContent = employee.name;
+                dropdown.appendChild(option);
+            });
+        }
+
+        function editLeave(id) {
+            const leave = leaves.find(l => l.id === id);
+            if (!leave) return;
+            
+            document.getElementById('leave-modal-title').textContent = 'تعديل بيانات الإجازة';
+            document.getElementById('leave-id').value = leave.id;
+            updateLeaveEmployeeDropdown();
+            document.getElementById('leave-employee').value = leave.employeeId || '';
+            document.getElementById('leave-type').value = leave.type || '';
+            document.getElementById('leave-start-date').value = leave.startDate || '';
+            document.getElementById('leave-end-date').value = leave.endDate || '';
+            document.getElementById('leave-days').value = leave.days || '';
+            document.getElementById('leave-status').value = leave.status || 'موافق عليه';
+            document.getElementById('leave-notes').value = leave.notes || '';
+            
+            document.getElementById('leave-modal').classList.remove('hidden');
+        }
+
+        // ABSENCE SECTION
+        document.getElementById('add-absence-btn').addEventListener('click', () => {
+            document.getElementById('absence-modal-title').textContent = 'تسجيل غياب';
+            document.getElementById('absence-form').reset();
+            document.getElementById('absence-id').value = '';
+            updateAbsenceEmployeeDropdown();
+            document.getElementById('absence-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('close-absence-modal').addEventListener('click', () => {
+            document.getElementById('absence-modal').classList.add('hidden');
+        });
+
+        document.getElementById('cancel-absence').addEventListener('click', () => {
+            document.getElementById('absence-modal').classList.add('hidden');
+        });
+
+        // Show/hide hours field based on absence type
+        document.getElementById('absence-type').addEventListener('change', function() {
+            const hoursField = document.getElementById('absence-hours').parentElement;
+            
+            if (this.value === 'غياب جزئي' || this.value === 'تأخير') {
+                hoursField.classList.remove('hidden');
+                document.getElementById('absence-hours').required = true;
+            } else {
+                hoursField.classList.add('hidden');
+                document.getElementById('absence-hours').required = false;
+            }
+        });
+
+        document.getElementById('absence-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            showLoading();
+            
+            const absenceId = document.getElementById('absence-id').value;
+            const absence = {
+                employeeId: document.getElementById('absence-employee').value,
+                date: document.getElementById('absence-date').value,
+                type: document.getElementById('absence-type').value,
+                hours: parseFloat(document.getElementById('absence-hours').value) || 0,
+                reason: document.getElementById('absence-reason').value,
+                status: document.getElementById('absence-status').value,
+                notes: document.getElementById('absence-notes').value
+            };
+            
+            try {
+                if (absenceId) {
+                    await db.collection('absences').doc(absenceId).update(absence);
+                    showToast('تم تحديث بيانات الغياب بنجاح');
+                } else {
+                    await db.collection('absences').add(absence);
+                    showToast('تم تسجيل الغياب بنجاح');
+                }
+                
+                document.getElementById('absence-modal').classList.add('hidden');
+            } catch (error) {
+                console.error('Error saving absence:', error);
+                showToast('حدث خطأ أثناء حفظ بيانات الغياب', 'error');
+            }
+            
+            hideLoading();
+        });
+
+        function updateAbsencesList() {
+            const tableBody = document.getElementById('absence-table');
+            
+            // Get filter values
+            const monthFilter = document.getElementById('absence-month-filter').value;
+            const yearFilter = document.getElementById('absence-year-filter').value;
+            const employeeFilter = document.getElementById('absence-employee-filter').value;
+            
+            let filteredAbsences = [...absences];
+            
+            if (monthFilter || yearFilter) {
+                filteredAbsences = filteredAbsences.filter(absence => {
+                    const absenceDate = new Date(absence.date);
+                    const month = String(absenceDate.getMonth() + 1).padStart(2, '0');
+                    const year = absenceDate.getFullYear().toString();
+                    
+                    if (monthFilter && month !== monthFilter) return false;
+                    if (yearFilter && year !== yearFilter) return false;
+                    
+                    return true;
+                });
+            }
+            
+            if (employeeFilter) {
+                filteredAbsences = filteredAbsences.filter(absence => absence.employeeId === employeeFilter);
+            }
+            
+            if (filteredAbsences.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300" colspan="5">لا يوجد حالات غياب مسجلة</td>
+                    </tr>
+                `;
+            } else {
+                tableBody.innerHTML = '';
+                
+                filteredAbsences.forEach(absence => {
+                    const employee = employees.find(emp => emp.id === absence.employeeId);
+                    const employeeName = employee ? employee.name : 'غير معروف';
+                    
+                    const row = document.createElement('tr');
+                    row.classList.add('hover:bg-gray-50', 'dark:hover:bg-gray-700');
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">${employeeName}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">${absence.date || ''}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">${absence.type || ''}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">${absence.reason || ''}</td>
+                        <td class="px-6 py-4 text-sm font-medium">
+                            <div class="flex space-x-2 space-x-reverse">
+                                <button class="text-primary hover:text-secondary edit-absence" data-id="${absence.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900 delete-absence" data-id="${absence.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                document.querySelectorAll('.edit-absence').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        editAbsence(id);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-absence').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        confirmDelete('absence', id);
+                    });
+                });
+            }
+            
+            updateAbsenceStatistics(filteredAbsences);
+        }
+
+        function updateAbsenceEmployeeDropdown() {
+            const dropdown = document.getElementById('absence-employee');
+            dropdown.innerHTML = '<option value="">اختر الموظف</option>';
+            
+            const activeEmployees = employees.filter(emp => emp.status === 'نشط');
+            
+            activeEmployees.forEach(employee => {
+                const option = document.createElement('option');
+                option.value = employee.id;
+                option.textContent = employee.name;
+                dropdown.appendChild(option);
+            });
+        }
+
+        function updateAbsenceEmployeeFilter() {
+            const dropdown = document.getElementById('absence-employee-filter');
+            const currentValue = dropdown.value;
+            dropdown.innerHTML = '<option value="">جميع الموظفين</option>';
+            
+            employees.forEach(employee => {
+                const option = document.createElement('option');
+                option.value = employee.id;
+                option.textContent = employee.name;
+                dropdown.appendChild(option);
+            });
+            
+            dropdown.value = currentValue;
+        }
+
+        function editAbsence(id) {
+            const absence = absences.find(a => a.id === id);
+            if (!absence) return;
+            
+            document.getElementById('absence-modal-title').textContent = 'تعديل بيانات الغياب';
+            document.getElementById('absence-id').value = absence.id;
+            updateAbsenceEmployeeDropdown();
+            document.getElementById('absence-employee').value = absence.employeeId || '';
+            document.getElementById('absence-date').value = absence.date || '';
+            document.getElementById('absence-type').value = absence.type || '';
+            document.getElementById('absence-hours').value = absence.hours || '';
+            document.getElementById('absence-reason').value = absence.reason || '';
+            document.getElementById('absence-status').value = absence.status || 'موثق';
+            document.getElementById('absence-notes').value = absence.notes || '';
+            
+            // Trigger type change to show/hide hours field
+            document.getElementById('absence-type').dispatchEvent(new Event('change'));
+            
+            document.getElementById('absence-modal').classList.remove('hidden');
+        }
+
+        function updateAbsenceStatistics(filteredAbsences) {
+            let totalAbsences = filteredAbsences.length;
+            let withoutExcuse = 0;
+            let withPermission = 0;
+            let lateCount = 0;
+            
+            filteredAbsences.forEach(absence => {
+                if (absence.type === 'تأخير') {
+                    lateCount++;
+                } else if (absence.reason === 'بدون عذر') {
+                    withoutExcuse++;
+                } else if (absence.reason === 'برخصة') {
+                    withPermission++;
+                }
+            });
+            
+            document.getElementById('total-absences').textContent = totalAbsences;
+            document.getElementById('absence-without-excuse').textContent = withoutExcuse;
+            document.getElementById('absence-with-permission').textContent = withPermission;
+            document.getElementById('late-count').textContent = lateCount;
+        }
+
+        // Filter absences by month and year
+        document.getElementById('absence-month-filter').addEventListener('change', () => updateAbsencesList());
+        document.getElementById('absence-year-filter').addEventListener('change', () => updateAbsencesList());
+        document.getElementById('absence-employee-filter').addEventListener('change', () => updateAbsencesList());
+
+        // REMAINING CODE (employees, contracts, terminations, etc. - same as before)
         // Add employee button
         document.getElementById('add-employee-btn').addEventListener('click', () => {
             document.getElementById('employee-modal-title').textContent = 'إضافة موظف جديد';
@@ -1581,6 +2330,18 @@
                             await db.collection('terminations').doc(termination.id).delete();
                         }
                         
+                        // Delete related leaves
+                        const leavesToDelete = leaves.filter(leave => leave.employeeId === id);
+                        for (const leave of leavesToDelete) {
+                            await db.collection('leaves').doc(leave.id).delete();
+                        }
+                        
+                        // Delete related absences
+                        const absencesToDelete = absences.filter(absence => absence.employeeId === id);
+                        for (const absence of absencesToDelete) {
+                            await db.collection('absences').doc(absence.id).delete();
+                        }
+                        
                         confirmModal.classList.add('hidden');
                         showToast('تم حذف الموظف بنجاح');
                     } catch (error) {
@@ -1638,6 +2399,50 @@
                     } catch (error) {
                         console.error('Error deleting termination:', error);
                         showToast('حدث خطأ أثناء حذف سجل انتهاء الخدمة', 'error');
+                    }
+                    
+                    hideLoading();
+                };
+            } else if (type === 'leave') {
+                const leave = leaves.find(l => l.id === id);
+                const employee = employees.find(emp => emp.id === leave.employeeId);
+                const employeeName = employee ? employee.name : 'غير معروف';
+                
+                confirmTitle.textContent = 'تأكيد حذف الإجازة';
+                confirmMessage.textContent = `هل أنت متأكد من رغبتك في حذف إجازة "${employeeName}"؟`;
+                
+                confirmYes.onclick = async () => {
+                    showLoading();
+                    
+                    try {
+                        await db.collection('leaves').doc(id).delete();
+                        confirmModal.classList.add('hidden');
+                        showToast('تم حذف الإجازة بنجاح');
+                    } catch (error) {
+                        console.error('Error deleting leave:', error);
+                        showToast('حدث خطأ أثناء حذف الإجازة', 'error');
+                    }
+                    
+                    hideLoading();
+                };
+            } else if (type === 'absence') {
+                const absence = absences.find(a => a.id === id);
+                const employee = employees.find(emp => emp.id === absence.employeeId);
+                const employeeName = employee ? employee.name : 'غير معروف';
+                
+                confirmTitle.textContent = 'تأكيد حذف الغياب';
+                confirmMessage.textContent = `هل أنت متأكد من رغبتك في حذف سجل غياب "${employeeName}"؟`;
+                
+                confirmYes.onclick = async () => {
+                    showLoading();
+                    
+                    try {
+                        await db.collection('absences').doc(id).delete();
+                        confirmModal.classList.add('hidden');
+                        showToast('تم حذف سجل الغياب بنجاح');
+                    } catch (error) {
+                        console.error('Error deleting absence:', error);
+                        showToast('حدث خطأ أثناء حذف سجل الغياب', 'error');
                     }
                     
                     hideLoading();
@@ -2467,11 +3272,11 @@
                 </tr>
                 <tr>
                     <td class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right font-medium">تاريخ انتهاء العقد</td>
-                    <td class="px-6 py-4 text-sm">${employee.contractEndDate || 'غير محدد'}</td>
+                    <td class="px-6 py-4 text-sm">${employee.contractEndDate || ''}</td>
                 </tr>
                 <tr>
                     <td class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right font-medium">تاريخ انتهاء إخطار التعيين</td>
-                    <td class="px-6 py-4 text-sm">${employee.noticeEndDate || 'غير محدد'}</td>
+                    <td class="px-6 py-4 text-sm">${employee.noticeEndDate || ''}</td>
                 </tr>
                 <tr>
                     <td class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right font-medium">نوع العقد</td>
